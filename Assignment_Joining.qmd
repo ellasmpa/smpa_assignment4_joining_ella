@@ -1,6 +1,6 @@
 ---
 title: "Joining Assignment"
-author: "Your Name Here"
+author: "Ella"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 format:
   html:
@@ -37,13 +37,13 @@ Join together the election results and urban/suburban/rural tables above, and th
 
 -   filter for just Virginia
 
--   group_by and summarize to calculate the mean pct of Trump 2020 vote (pct_r\_2020) by urban/rural categories (rural_urban)
+-   group_by and summarize to calculate the mean pct of Trump 2020 vote (`pct_r_2020`) by urban/rural categories (`rural_urban`)
 
 ```{r}
-
-
-
-
+inner_join(counties_demographics, counties_rural_urban_suburban) %>% 
+  filter(state_code == "VA") %>% 
+  group_by(rural_urban) %>% 
+  summarize(average = mean(pct_r_2020))
 ```
 
 2)  
@@ -52,58 +52,78 @@ Using the joined election results / urban/suburban/rural table created above:
 
 -   filter for just Virginia
 
--   count up how many counties were won by party in 2020 (winner_2020) by urban/rural categories
+-   count up how many counties were won by party in 2020 (`winner_2020`) by urban/rural categories
 
 ```{r}
 
+inner_join(counties_demographics, counties_rural_urban_suburban) %>% 
+  filter(state_code == "VA") %>% 
+  group_by(rural_urban) %>% 
+  summarize(n())
 
-
+newtable <- inner_join(counties_demographics, counties_rural_urban_suburban) %>% 
+  filter(state_code == "VA") %>% 
+  group_by(rural_urban) %>% 
+  summarize(n()) 
 
 ```
-
-3)
+3)  
 
 Join together the election results and demographics tables above, and then use the joined table to:
 
 -   filter for just Florida
 
--   group/summarize to calculate the mean pct of Trump 2020 vote in the counties above or below national average for college graduates (pct_ed_college_all_abovebelow_natl)
+-   group/summarize to calculate the mean pct of Trump 2020 vote in the counties above or below national average for college graduates (`pct_ed_college_all_abovebelow_natl`)
 
 ```{r}
 
-
+inner_join(counties_elexresults, counties_demographics) %>% 
+  filter(state_code == "FL") %>% 
+  group_by(pct_ed_college_all_abovebelow_natl) %>% 
+  summarize(average = mean(republican_2020))
 
 
 ```
 
-4)
+4)  
 
 Using the joined table you made above:
 
--   group/summarize to calculate the mean pct of Trump 2020 vote by counties above or below the national average for college graduates (pct_ed_college_all_abovebelow_natl). Note we're looking for the entire country here.
+-   group/summarize to calculate the mean pct of Trump 2020 vote by counties above or below the national average for college graduates (`pct_ed_college_all_abovebelow_natl`).
+
+    Note we're looking for the entire country here.
 
 ```{r}
-
-
+inner_join(counties_elexresults, counties_demographics) %>% 
+    group_by(pct_ed_college_all_abovebelow_natl) %>% 
+    summarize(average = mean(republican_2020))
 
 
 ```
 
 Now using the joined datasets above, come up with two groupings you find interesting or newsworthy in a particular state, and replicate the steps above them them instead.
 
-5)
+5)  group/summarize to calculate the mean pct of Joe Biden's votes in Texas for the national average of military veterans (`pct_mil_veteran`).
 
 ```{r}
+## im interested in this one to see if Biden's strategy to appeal to military families worked in a state with a military families stronghold.
 
-
-
+inner_join(counties_elexresults, counties_demographics) %>% 
+  filter(state_code == "TX") %>% 
+  group_by(pct_mil_veteran) %>% 
+  summarize(average = mean(democrat_2020))
 
 ```
 
-6)
+6) group/summarize to calculate the mean pct of Trump 2020 vote by counties above or below the national average for people born outside of the US in Florida
 
 ```{r}
+## im interested in seeing if Trump's percentage of votes earned by foreigners in Florida, where he frequently targeted Hispanic voters, was above or below the average for foreigners who voted in 2020.
 
+inner_join(counties_elexresults, counties_demographics) %>% 
+  filter(state_code == "FL") %>% 
+  group_by(pct_born_foreign_abovebelow_natl) %>% 
+  summarize(average = mean(democrat_2020))
 
 
 
@@ -116,9 +136,8 @@ Up until now we've joined two tables together. But we actually have three tables
 
 ```{r}
 
-
-
-
+tablea <- inner_join(counties_elexresults, counties_demographics)
+inner_join(tablea, counties_rural_urban_suburban)
 
 
 ```
